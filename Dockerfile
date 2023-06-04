@@ -13,4 +13,4 @@ RUN mvn -f pom.xml clean package
 FROM eclipse-temurin:19
 WORKDIR /app
 COPY --from=build /app/target/*.jar /app/flightaware.jar
-ENTRYPOINT [“java”,“-jar”,“/flightaware.jar”]
+ENTRYPOINT [“java”,“-jar”,“/app/flightaware.jar”]
