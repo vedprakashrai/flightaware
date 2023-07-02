@@ -1,4 +1,4 @@
-package com.hemlata.app.model;
+package com.flightaware.app.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

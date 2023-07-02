@@ -8,7 +8,7 @@
 		<version>2.4.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.hemlata</groupId>
+	<groupId>com.flightaware</groupId>
 	<artifactId>FlightAware</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>FlightAware</name>

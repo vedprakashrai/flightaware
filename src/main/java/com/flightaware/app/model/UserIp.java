@@ -1,4 +1,4 @@
-package com.hemlata.app.model;
+package com.flightaware.app.model;
 
 import java.util.Date;
 

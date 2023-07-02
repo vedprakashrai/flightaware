@@ -1,10 +1,10 @@
-package com.hemlata.app.repository;
+package com.flightaware.app.repository;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.hemlata.app.model.User;
-import com.hemlata.app.model.UserIp;
+import com.flightaware.app.model.User;
+import com.flightaware.app.model.UserIp;
 
 @Repository
 public interface userRepo extends CrudRepository<User,Long> {

@@ -1,4 +1,4 @@
-package com.hemlata.app;
+package com.flightaware.app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
