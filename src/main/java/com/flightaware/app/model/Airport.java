@@ -2,9 +2,9 @@ package com.flightaware.app.model;
 
 public class Airport {
 	private String locationCode;
-	private String FLSLocationName;
+	private String fLSLocationName;
 	private String terminal;
-	private String FLSDayIndicator;
+	private String fLSDayIndicator;
 	
 	public String getLocationCode() {
 		return locationCode;
@@ -13,10 +13,10 @@ public class Airport {
 		this.locationCode = locationCode;
 	}
 	public String getFLSLocationName() {
-		return FLSLocationName;
+		return fLSLocationName;
 	}
 	public void setFLSLocationName(String fLSLocationName) {
-		FLSLocationName = fLSLocationName;
+		this.fLSLocationName = fLSLocationName;
 	}
 	public String getTerminal() {
 		return terminal;
@@ -25,9 +25,9 @@ public class Airport {
 		this.terminal = terminal;
 	}
 	public String getFLSDayIndicator() {
-		return FLSDayIndicator;
+		return fLSDayIndicator;
 	}
 	public void setFLSDayIndicator(String fLSDayIndicator) {
-		FLSDayIndicator = fLSDayIndicator;
+		this.fLSDayIndicator = fLSDayIndicator;
 	}
 }

@@ -69,7 +69,7 @@ form {
 	<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
 		<a class="navbar-brand" href="/"> <img src="/Images/airplane.svg"
 			width="30" height="30" class="d-inline-block align-top" alt="">
-			FightAware
+			FlightAware
 		</a>
 
 		<li class="nav-item"><a class="btn btn-success " href="/fprice"
@@ -82,12 +82,12 @@ form {
 	<div class="container">
 		<form class="form-horizontal" action="#" th:action="@{/fprice}"
 			th:object="${userip}" method="post" style="border: solid 1px">
-			<div class="form-group">
+			<!-- <div class="form-group">
 				<div class="col-xs-8">
 					<input class="form-control" th:field="*{Locale}" type="text"
 						name="ques" placeholder="Enter Locale "></input>
 				</div>
-			</div>
+			</div>-->
 			<div class="form-group">
 				<div class="col-xs-8">
 					<input class="form-control" th:field="*{Origin}" type="text"
@@ -97,13 +97,13 @@ form {
 			<div class="form-group">
 				<div class="col-xs-8">
 					<input class="form-control" th:field="*{Dest}" type="text"
-						name="ques" placeholder="Enter place to visit"></input>
+						name="dest" placeholder="Enter place to visit"></input>
 				</div>
 			</div>
 			<div class="form-group">
 				<div class="col-xs-8">
-					<input class="form-control" th:field="*{outDate}" type="text"
-						name="ques" placeholder="Enter date in yyyy-mm-dd format"></input>
+					<input class="form-control" th:field="*{outDate}" type="date"
+						name="outDate" placeholder="Enter date in yyyy-mm-dd format"></input>
 				</div>
 			</div>
 			<div class="row">
@@ -115,77 +115,35 @@ form {
 	</div>
 	<center>
 		<div>
-
-			<h2>
-				<span th:text="@{${msg}}"></span>
-			</h2>
-
-			<div style="padding: 100px;">
+			<div style="padding: 100px;padding-top: 20px">
 				<div class="row">
-					<div class="card text-white bg-secondary mb-3"
-						style="width: 18rem;">
-						<div class="card-header">Flight prices</div>
+					<div class="card text-white bg-secondary mb-3" style="width: 100%;">
+						<div class="card-header"><span th:text="@{${msg}}"></span></div>
 						<table class="table">
 							<thead class="thead-light">
 								<tr>
-									<th>Id</th>
-									<th>Price</th>
+									<th>Airline</th>
+									<th>Flight Number</th>
+									<th>Departure Airport</th>
+									<th>Departure Terminal</th>
+									<th>Departure Time</th>
+									<th>Arrival Airport</th>
+									<th>Arrival Terminal</th>
+									<th>Arrival Time</th>
+									<th>Flight Duration</th>
 								</tr>
 							</thead>
 							<tbody>
-								<tr th:each="con: ${qarray}">
-									<td th:text="${con.QuoteId}"></td>
-									<td th:text="${con.MinPrice}"></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					<div class="card text-black bg-secondary mb-3" style="width: 8rem;">
-						<div class="card-header">Currency</div>
-						<table class="table">
-							<thead class="thead-light">
-								<tr>
-									<th>Symbol</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr th:each="cr: ${crarray}">
-									<td th:text="${cr.Symbol}"></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					<div class="card text-white bg-info mb-3" style="width: 18rem;">
-						<div class="card-header">Places</div>
-						<table class="table">
-							<thead class="thead-light">
-								<tr>
-									<th>Place</th>
-									<th>Country</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr th:each="c1: ${parray}">
-									<td th:text="${c1.Name}"></td>
-									<td th:text="${c1.CountryName}"></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					<div class="card text-white bg-primary mb-3" style="width: 18rem;">
-						<div class="card-header">Carriers</div>
-						<table class="table">
-							<thead class="thead-light">
-								<tr>
-									<th>Id</th>
-
-									<th>Carriers</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr th:each="c2: ${carray}">
-									<td th:text="${c2.CarrierId}"></td>
-									<td th:text="${c2.Name}"></td>
+								<tr th:each="flight: ${flights}">
+									<td th:text="${flight.flightLegDetails.marketingAirline.companyShortName}"></td>
+									<td align="center" th:text="${flight.flightLegDetails.flightNumber}"></td>
+									<td th:text="${flight.flightLegDetails.departureAirport.fLSLocationName}"></td>
+									<td align="center" th:text="${flight.flightLegDetails.departureAirport.terminal}"></td>
+									<td th:text="${flight.flightLegDetails.departureDateTime}"></td>
+									<td th:text="${flight.flightLegDetails.arrivalAirport.fLSLocationName}"></td>
+									<td align="center" th:text="${flight.flightLegDetails.arrivalAirport.terminal}"></td>
+									<td th:text="${flight.flightLegDetails.arrivalDateTime}"></td>
+									<td th:text="${flight.flightLegDetails.journeyDuration}"></td>
 								</tr>
 							</tbody>
 						</table>

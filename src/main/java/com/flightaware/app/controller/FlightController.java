@@ -140,35 +140,13 @@ public class FlightController {
 		System.out.println(srcc + " " + destc);
 		String str = ap.getFlights(locale, src, dest, dte);
 		
-		List<FlightDetails> flightDeatls =ServiceResponseDeserialize.getFlightInfo(str);
+		List<FlightDetails> flightDetails =ServiceResponseDeserialize.getFlightInfo(str);
 		System.out.println("data is" + locale + " " + srcc + " " + destc + " " + dte + " ");
 		
-		Map<String, Object> restMap = mapper.readValue(str, Map.class);
-		System.out.println(restMap.toString());
-		ArrayList<String> qlist = (ArrayList<String>) restMap.get("Quotes");
-		ArrayList<String> plist = (ArrayList<String>) restMap.get("Places");
-		ArrayList<String> clist = (ArrayList<String>) restMap.get("Carriers");
-		ArrayList<String> crlist = (ArrayList<String>) restMap.get("Currencies");
-		Iterator qit = qlist.iterator();
-		Iterable<Object> qarray = (Iterable<Object>) StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(qit, 0), false).collect(Collectors.toList());
-		Iterator pit = plist.iterator();
-		Iterable<Object> parray = (Iterable<Object>) StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(pit, 0), false).collect(Collectors.toList());
-		Iterator cit = clist.iterator();
-		Iterable<Object> carray = (Iterable<Object>) StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(cit, 0), false).collect(Collectors.toList());
-		Iterator crit = crlist.iterator();
-		Iterable<Object> crarray = (Iterable<Object>) StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(crit, 0), false).collect(Collectors.toList());
-
-		System.out.println("qaeear is " + qarray);
-		modelAndView.addObject("msg", "flight details");
-		modelAndView.addObject("qarray", qarray);
-		modelAndView.addObject("parray", parray);
-		modelAndView.addObject("carray", carray);
-		modelAndView.addObject("crarray", crarray);
+		
+		modelAndView.addObject("msg", "Flight details");
 		modelAndView.addObject("userip", userip);
+		modelAndView.addObject("flights",flightDetails);
 		modelAndView.setViewName("fprice");
 		return modelAndView;
 	}
