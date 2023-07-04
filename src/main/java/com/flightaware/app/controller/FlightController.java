@@ -17,11 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flightaware.app.model.FlightDetails;
-import com.flightaware.app.model.OTA_AirDetailsRS;
 import com.flightaware.app.model.User;
 import com.flightaware.app.model.UserIp;
 import com.flightaware.app.repository.FlightRepo;
@@ -113,14 +110,14 @@ public class FlightController {
 		return modelAndView;
 	}
 
-	@GetMapping("/fprice")
-	public ModelAndView fpriceGet(ModelAndView modelAndView, UserIp userip) {
+	@GetMapping("/flights")
+	public ModelAndView flightsGet(ModelAndView modelAndView, UserIp userip) {
 		modelAndView.addObject("userip", userip);
-		modelAndView.setViewName("fprice");
+		modelAndView.setViewName("flights");
 		return modelAndView;
 	}
 
-	@PostMapping(value = "/fprice")
+	@PostMapping(value = "/flights")
 	public ModelAndView dispform(ModelAndView modelAndView, UserIp userip)
 			throws InterruptedException, IOException, ParseException {
 		String locale, src, dest, dte;
@@ -141,13 +138,12 @@ public class FlightController {
 		String str = ap.getFlights(locale, src, dest, dte);
 		
 		List<FlightDetails> flightDetails =ServiceResponseDeserialize.getFlightInfo(str);
-		System.out.println("data is" + locale + " " + srcc + " " + destc + " " + dte + " ");
-		
+		flightDetails = ServiceResponseDeserialize.formatList(flightDetails);
 		
 		modelAndView.addObject("msg", "Flight details");
 		modelAndView.addObject("userip", userip);
 		modelAndView.addObject("flights",flightDetails);
-		modelAndView.setViewName("fprice");
+		modelAndView.setViewName("flights");
 		return modelAndView;
 	}
 

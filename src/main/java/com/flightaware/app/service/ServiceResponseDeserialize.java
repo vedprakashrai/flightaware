@@ -1,5 +1,6 @@
 package com.flightaware.app.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -10,7 +11,6 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flightaware.app.model.FilghtsServiceResponse;
 import com.flightaware.app.model.FlightDetails;
-import com.flightaware.app.model.OTA_AirDetailsRS;
 
 public class ServiceResponseDeserialize {
 	
@@ -29,7 +29,25 @@ public class ServiceResponseDeserialize {
         } catch (Exception je) {
             System.out.println(je.toString());
         }
-		return null;
+		return new ArrayList<FlightDetails>();
+	}
+	
+public static  List<FlightDetails> formatList(List<FlightDetails> flightDetails){
+		
+		for(FlightDetails flightDetail:flightDetails) {
+			
+			if(flightDetail.getFlightLegDetails()!=null) {
+				if(flightDetail.getFlightLegDetails().getJourneyDuration()!=null)
+					flightDetail.getFlightLegDetails().setJourneyDuration(flightDetail.getFlightLegDetails().getJourneyDuration().replace("PT", ""));
+				if(flightDetail.getFlightLegDetails().getArrivalDateTime()!=null)
+					flightDetail.getFlightLegDetails().setArrivalDateTime(flightDetail.getFlightLegDetails().getArrivalDateTime().replace("T", "/"));
+				if(flightDetail.getFlightLegDetails().getDepartureDateTime()!=null)
+					flightDetail.getFlightLegDetails().setDepartureDateTime(flightDetail.getFlightLegDetails().getDepartureDateTime().replace("T", "/"));
+			
+			}
+		}
+		
+		return flightDetails;
 	}
 
 }
