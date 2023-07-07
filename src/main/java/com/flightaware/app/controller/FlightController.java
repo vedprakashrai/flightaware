@@ -10,6 +10,8 @@ import java.util.Spliterators;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flightaware.app.model.AirportResponse;
+import com.flightaware.app.model.Airports;
 import com.flightaware.app.model.FlightDetails;
 import com.flightaware.app.model.User;
 import com.flightaware.app.model.UserIp;
@@ -79,13 +83,14 @@ public class FlightController {
 	}
 
 	@PostMapping("/Login")
-	public ModelAndView loginUser(ModelAndView modelAndView, User user) {
+	public ModelAndView loginUser(ModelAndView modelAndView, User user,HttpSession session) {
 		String email = user.getEmailId();
 		User existingUser = urepo.findByEmailIdIgnoreCase(email);
 		System.out.println(existingUser);
 		if (existingUser != null) {
 			if (encoder.matches(user.getPass(), existingUser.getPass())) {
 				// successfully logged in
+				session.setAttribute("loggedEmail", existingUser.getEmailId()); 
 				modelAndView.addObject("msg", "You Have Successfully Logged in");
 				modelAndView.setViewName("loginHome");
 			} else {
@@ -143,82 +148,32 @@ public class FlightController {
 		modelAndView.addObject("msg", "Flight details");
 		modelAndView.addObject("userip", userip);
 		modelAndView.addObject("flights",flightDetails);
+		if(flightDetails ==null || flightDetails.isEmpty()) {
+			modelAndView.addObject("noFlight","Sorry, No direct flights available.");
+		}
 		modelAndView.setViewName("flights");
 		return modelAndView;
 	}
-
-	@GetMapping("/dprice")
-	public ModelAndView dpriceGet(ModelAndView modelAndView, UserIp userip) {
-		modelAndView.addObject("userip", userip);
-		modelAndView.setViewName("dprice");
-		return modelAndView;
-	}
-
-	@PostMapping(value = "/dprice")
-	public ModelAndView diform(ModelAndView modelAndView, UserIp userip)
+	
+	@PostMapping(value = "/airport")
+	public ModelAndView getAirportInfo(ModelAndView modelAndView, UserIp userip)
 			throws InterruptedException, IOException, ParseException {
-		String ct, cr, dte2, locale, src, dest, dte;
-//	frepo.save(userip);
-		locale = userip.getLocale();
-		ct = userip.getCountry();
-		cr = userip.getCurrency();
-		src = userip.getOrigin();
+		String airport =  userip.getOrigin();
+		String aInfo = ap.getAirportInfo(airport);
+		String aAirlineInfo = ap.getAirportAirlines(airport);
+		Airports aps =  ((AirportResponse)ServiceResponseDeserialize.getObjectFromXml(aInfo, AirportResponse.class)).getAirports();
 
-		dest = userip.getDest();
-		String srcc, destc;
-		srcc = cc.codes(src);
-		destc = cc.codes(dest);
-		System.out.println(src + " " + dest);
-		System.out.println(srcc + " " + destc);
-		dte = userip.getOutDate();
-		dte2 = userip.getInDate();
-		// Date date1=(Date) new SimpleDateFormat("yyyy-mm-dd").parse(dte);
-		// DateFormat sdf = new SimpleDateFormat();
-		// java.util.Date out = sdf.parse(dte);
-		// System.out.println(dte+"\t"+date1);
-		String str = ap.dprices(ct, cr, locale, srcc, destc, dte, dte2);
-		System.out.println("data is" + locale + " " + src + " " + dest + " " + dte + " ");
-		ObjectMapper mapper = new ObjectMapper();
-		Map<String, Object> restMap = mapper.readValue(str, Map.class);
-		System.out.println(restMap.toString());
-		ArrayList<String> qlist = (ArrayList<String>) restMap.get("Quotes");
-		ArrayList<String> plist = (ArrayList<String>) restMap.get("Places");
-		ArrayList<String> clist = (ArrayList<String>) restMap.get("Carriers");
-		ArrayList<String> crlist = (ArrayList<String>) restMap.get("Currencies");
-		Map<String, Object> dateMap = (Map<String, Object>) restMap.get("Dates");
-		ArrayList<String> dolist = (ArrayList<String>) dateMap.get("OutboundDates");
-		ArrayList<String> dilist = (ArrayList<String>) dateMap.get("OutboundDates");
-		Iterator qit = qlist.iterator();
-		Iterable<Object> qarray = (Iterable<Object>) StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(qit, 0), false).collect(Collectors.toList());
-		Iterator pit = plist.iterator();
-		Iterable<Object> parray = (Iterable<Object>) StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(pit, 0), false).collect(Collectors.toList());
-		Iterator cit = clist.iterator();
-		Iterable<Object> carray = (Iterable<Object>) StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(cit, 0), false).collect(Collectors.toList());
-		Iterator crit = crlist.iterator();
-		Iterable<Object> crarray = (Iterable<Object>) StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(crit, 0), false).collect(Collectors.toList());
-		Iterator doit = dolist.iterator();
-		Iterable<Object> doarray = (Iterable<Object>) StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(doit, 0), false).collect(Collectors.toList());
-		Iterator diit = dilist.iterator();
-		Iterable<Object> dirray = (Iterable<Object>) StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(diit, 0), false).collect(Collectors.toList());
+		aps.setCarrier(((AirportResponse)ServiceResponseDeserialize.getObjectFromXml(aAirlineInfo, AirportResponse.class)).getAirports().getCarrier());
 
-		System.out.println("qaeear is " + qarray);
-		modelAndView.addObject("msg", "flight details");
-		modelAndView.addObject("qarray", qarray);
-		modelAndView.addObject("parray", parray);
-		modelAndView.addObject("doarray", doarray);
-		modelAndView.addObject("diarray", dirray);
-		modelAndView.addObject("carray", carray);
-		modelAndView.addObject("crarray", crarray);
+		modelAndView.addObject("msg", "Airport details");
 		modelAndView.addObject("userip", userip);
-		modelAndView.setViewName("dprice");
+		modelAndView.addObject("airport",aps.getAirport());
+		modelAndView.addObject("carrier",aps.getCarrier());
+		modelAndView.setViewName("route");
 		return modelAndView;
 	}
+
+
 
 	@GetMapping("/routes")
 	public ModelAndView drGet(ModelAndView modelAndView, UserIp userip) {
@@ -230,68 +185,32 @@ public class FlightController {
 	@PostMapping(value = "/routes")
 	public ModelAndView route(ModelAndView modelAndView, UserIp userip)
 			throws InterruptedException, IOException, ParseException {
-		String ct, cr, dte2, locale, src, dest, dte;
-		// frepo.save(userip);
-		locale = userip.getLocale();
-		ct = userip.getCountry();
-		cr = userip.getCurrency();
-		src = userip.getOrigin();
-		dest = userip.getDest();
-		dte = userip.getOutDate();
-		String srcc, destc;
-		srcc = cc.codes(src);
-		destc = cc.codes(dest);
-		System.out.println(src + " " + dest);
-		System.out.println(srcc + " " + destc);
-		// Date date1=(Date) new SimpleDateFormat("yyyy-mm-dd").parse(dte);
-		// DateFormat sdf = new SimpleDateFormat();
-		// java.util.Date out = sdf.parse(dte);
-		// System.out.println(dte+"\t"+date1);
-		String str = ap.rts(ct, cr, locale, srcc, destc, dte);
-		System.out.println("data is" + locale + " " + srcc + " " + destc + " " + dte + " ");
-		ObjectMapper mapper = new ObjectMapper();
-		Map<String, Object> restMap = mapper.readValue(str, Map.class);
-		System.out.println(restMap.toString());
-		ArrayList<String> qlist = (ArrayList<String>) restMap.get("Quotes");
-		ArrayList<String> plist = (ArrayList<String>) restMap.get("Places");
-		ArrayList<String> clist = (ArrayList<String>) restMap.get("Carriers");
-		ArrayList<String> crlist = (ArrayList<String>) restMap.get("Currencies");
-
-		ArrayList<String> rtlist = (ArrayList<String>) restMap.get("Routes");
-		Iterator qit = qlist.iterator();
-		Iterable<Object> qarray = (Iterable<Object>) StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(qit, 0), false).collect(Collectors.toList());
-		Iterator pit = plist.iterator();
-		Iterable<Object> parray = (Iterable<Object>) StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(pit, 0), false).collect(Collectors.toList());
-		Iterator cit = clist.iterator();
-		Iterable<Object> carray = (Iterable<Object>) StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(cit, 0), false).collect(Collectors.toList());
-		Iterator crit = crlist.iterator();
-		Iterable<Object> crarray = (Iterable<Object>) StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(crit, 0), false).collect(Collectors.toList());
-		Iterator doit = rtlist.iterator();
-		Iterable<Object> doarray = (Iterable<Object>) StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(doit, 0), false).collect(Collectors.toList());
-
-		System.out.println("qaeear is " + qarray);
-		modelAndView.addObject("msg", "flight details");
-		modelAndView.addObject("qarray", qarray);
-		modelAndView.addObject("parray", parray);
-		modelAndView.addObject("doarray", doarray);
-		modelAndView.addObject("carray", carray);
-		modelAndView.addObject("crarray", crarray);
+		String airport =  userip.getOrigin();
+		String aInfo = ap.getAirportInfo(airport);
+		String aAirlineInfo = ap.getAirportAirlines(airport);
+		Airports aps =  ((AirportResponse)ServiceResponseDeserialize.getObjectFromXml(aInfo, AirportResponse.class)).getAirports();
+		
+		aps.setCarrier(((AirportResponse)ServiceResponseDeserialize.getObjectFromXml(aAirlineInfo, AirportResponse.class)).getAirports().getCarrier());
+		
+		modelAndView.addObject("msg", "Airport details");
 		modelAndView.addObject("userip", userip);
+		modelAndView.addObject("airport",aps.getAirport());
+		modelAndView.addObject("carrier",aps.getCarrier());
 		modelAndView.setViewName("route");
 		return modelAndView;
 	}
 
 	@GetMapping("/uguides")
-	public ModelAndView uguidet(ModelAndView modelAndView, UserIp userip) {
-		modelAndView.addObject("userip", userip);
+	public ModelAndView uguidet(ModelAndView modelAndView, HttpSession session) {
+		
+		String email = (String)session.getAttribute("loggedEmail");
+		modelAndView.addObject("userip",urepo.findByEmailIdIgnoreCase(email));
 		modelAndView.setViewName("uguide");
 		return modelAndView;
 	}
+	
+	
+	//User existingUser = urepo.findByEmailIdIgnoreCase(email);
 
 	@GetMapping("/currs")
 	public ModelAndView currss(ModelAndView modelAndView) throws IOException, InterruptedException {

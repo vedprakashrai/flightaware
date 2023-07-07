@@ -6,15 +6,8 @@
 <title>Home</title>
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
-<link
-	href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css"
-	rel="stylesheet" media="screen" />
-
 <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
 
-<link href="../../static/css/spring-core.css"
-	th:href="@{css/spring-core.css}" rel="stylesheet" media="screen" />
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -72,142 +65,46 @@ form {
 			FlightAware
 		</a>
 
-		<li class="nav-item"><a class="btn btn-success " href="/flights"
-			role="button">Flights</a> <a class=" btn btn-success " href="/routes"
-			role="button">Route wise prices</a> <a class=" btn btn-success "
-			href="/dprice" role="button"> Date wise Flights</a> <a
-			class=" btn btn-success " href="/uguides" role="button">User
-				Guides</a></li>
-
+		<li class="nav-item">
+			<a class="btn btn-success " href="/flights" role="button">Flights</a> 
+			<a class=" btn btn-success " href="/routes" role="button">Airports</a>
+			<a class=" btn btn-success " href="/uguides" role="button">Account</a>
+		</li>
 	</nav>
 	<div class="container">
 		<form class="form-horizontal" action="#" th:action="@{/routes}"
 			th:object="${userip}" method="post" style="border: solid 1px">
+			
 			<div class="form-group">
 				<div class="col-xs-8">
-					<input class="form-control" th:field="*{Country}" type="text"
-						name="ques" placeholder="Country code e.g US "></input>
-				</div>
-				<div class="form-group">
-					<div class="col-xs-8">
-						<input class="form-control" th:field="*{Currency}" type="text"
-							name="ques" placeholder="Enter Currency E.g USD "></input>
-					</div>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="col-xs-8">
-					<input class="form-control" th:field="*{Locale}" type="text"
+					<input class="form-control" th:field="*{Origin}" type="text"
 						name="ques" placeholder="Enter Locale E.g en-US"></input>
 				</div>
 			</div>
 			<div class="form-group">
-				<div class="col-xs-8">
-					<input class="form-control" th:field="*{Origin}" type="text"
-						name="ques" placeholder="Enter Source place "></input>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="col-xs-8">
-					<input class="form-control" th:field="*{Dest}" type="text"
-						name="ques" placeholder="Enter place to visit"></input>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="col-xs-8">
-					<input class="form-control" th:field="*{outDate}" type="text"
-						name="ques"
-						placeholder="Enter date to visit     must be in yyyy-mm-dd format"></input>
-				</div>
-			</div>
-			<div class="row">
-				<center>
+				<div class="col-xs-2">
 					<input class="btn btn-primary" type="submit" value="Get Result"></input>
-			</div>
-			</center>
-		</form>
+					</div>
+					</div>
 		</form>
 	</div>
+	<div class="col-md-6">
+	<ul class="list-group" th:each="ap: ${airport}">
+  <li class="list-group-item">Name:<span th:text="${ap.name}"></span></li>
+  <li class="list-group-item">State:<span th:text="${ap.state}"></span></li>
+  <li class="list-group-item">Country:<span th:text="${ap.country}"></span></li>
+  <li class="list-group-item">Latitude:<span th:text="${ap.latitude}"></span>&nbsp Longitude:<span th:text="${ap.longitude}"></span></li>
+</ul>
+</div>
+<div class="col-md-6" th:if="${not #lists.isEmpty(carrier)}">
+	Carriers:
+	<ul class="list-group" th:each="ca: ${carrier}">
+  		<li class="list-group-item"><span th:text="${ca.name}"></span></li>
+</ul>
+</div>
 	<center>
 		<div>
-
-			<h2>
-				<span th:text="@{${msg}}"></span>
-			</h2>
-
-			<div style="padding: 70px;">
-				<div class="row">
-					<div class="card text-white bg-secondary mb-3"
-						style="width: 18rem;">
-						<div class="card-header">Routes</div>
-						<table class="table">
-							<thead class="thead-light">
-								<tr>
-									<th>Date</th>
-									<th>Price</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr th:each="con: ${doarray}">
-									<td th:text="${con.QuoteDateTime}"></td>
-									<td th:text="${con.Price}"></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-
-					<div class="card text-black bg-secondary mb-3" style="width: 2rem;">
-						<div class="card-header">#</div>
-						<table class="table">
-							<thead class="thead-light">
-								<tr>
-									<th>#</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr th:each="cr: ${crarray}">
-									<td th:text="${cr.Symbol}"></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					<div class="card text-white bg-info mb-3" style="width: 30rem;">
-						<div class="card-header">Places</div>
-						<table class="table">
-							<thead class="thead-light">
-								<tr>
-									<th>Place</th>
-									<th>Country</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr th:each="c1: ${parray}">
-									<td th:text="${c1.Name}"></td>
-									<td th:text="${c1.CountryName}"></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					<div class="card text-white bg-primary mb-3" style="width: 16rem;">
-						<div class="card-header">Carriers</div>
-						<table class="table">
-							<thead class="thead-light">
-								<tr>
-									<th>Id</th>
-
-									<th>Carriers</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr th:each="c2: ${carray}">
-									<td th:text="${c2.CarrierId}"></td>
-									<td th:text="${c2.Name}"></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
+			
 		</div>
 	</center>
 
