@@ -40,14 +40,33 @@ public class ServiceResponseDeserialize {
 	public static  <T> T getObjectFromXml(String xml,Class T){
 		try {
             JSONObject xmlJSONObj = XML.toJSONObject(xml);
-            JSONObject airports = ((JSONObject)xmlJSONObj.get("Airports"));
-            if(airports!=null && airports.has("Carrier")) {
-            	Object carrier = ((JSONObject)xmlJSONObj.get("Airports")).get("Carrier");
-            	JSONArray jsonArray = new JSONArray();
-                jsonArray.put(carrier);
-                airports.put("Carrier", jsonArray);
-            	
-            }
+            try {
+	            JSONObject airports = ((JSONObject)xmlJSONObj.get("Airports"));
+	            if(airports!=null && airports.has("Carrier")) {
+	            	Object carrier = ((JSONObject)xmlJSONObj.get("Airports")).get("Carrier");
+	            	JSONArray jsonArray = new JSONArray();
+	                jsonArray.put(carrier);
+	                airports.put("Carrier", jsonArray);
+	            }
+	            	
+	            }catch(Exception e) {
+	            	
+	            	System.out.println(e.getMessage());
+	            }
+            
+            try {
+	            JSONObject airports = ((JSONObject)xmlJSONObj.get("OTA_AirDetailsRS"));
+	            if(airports!=null && airports.has("FlightDetails")) {
+	            	Object carrier = ((JSONObject)xmlJSONObj.get("OTA_AirDetailsRS")).get("FlightDetails");
+	            	JSONArray jsonArray = new JSONArray();
+	                jsonArray.put(carrier);
+	                airports.put("FlightDetails", jsonArray);
+	            }
+	            	
+	            }catch(Exception e) {
+	            	
+	            	System.out.println(e.getMessage());
+	            }
             
             String json = xmlJSONObj.toString();
             ObjectMapper mapper = new ObjectMapper();
